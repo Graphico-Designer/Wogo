@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WoGo</title> <!-- Changed from "Uber Luxe" to "WoGo" -->
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="styles.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="header">
+
+            <div class="logo">WoGo</div> <!-- Changed from "Uber Luxe" to "WoGo" -->
+
+            <nav class="desktop-nav">
+
+                <button id="profile-btn" class="nav-btn">Profile</button>
+
+                <button id="theme-toggle" class="nav-btn">🌙</button>
+
+            </nav>
+
+            <button class="hamburger" id="hamburger">☰</button>
+
+            <nav class="mobile-nav" id="mobile-nav">
+
+                <button id="mobile-profile-btn" class="nav-btn">Profile</button>
+
+                <button id="mobile-theme-toggle" class="nav-btn">🌙</button>
+
+            </nav>
+
+        </header>
+
+
+
+        <main class="main-wrapper">
+
+            <aside class="booking-panel" id="booking-panel">
+
+                <h1>Where to?</h1>
+
+                <div class="location-inputs">
+
+                    <div class="input-group">
+
+                        <span class="dot pickup"></span>
+
+                        <input type="text" id="pickup" placeholder="Enter pickup location" class="input-field" required>
+
+                        <ul class="suggestions" id="pickup-suggestions"></ul>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <span class="dot destination"></span>
+
+                        <input type="text" id="destination" placeholder="Enter destination" class="input-field" required>
+
+                        <ul class="suggestions" id="destination-suggestions"></ul>
+
+                    </div>
+
+                </div>
+
+                <div class="ride-options">
+
+                    <div class="ride-type active" data-type="uberx">
+
+                        <img src="https://cdn-icons-png.flaticon.com/512/3202/3202926.png" alt="UberX" class="ride-icon">
+
+                        <span>UberX</span>
+
+                        <span class="price">₹0</span>
+
+                    </div>
+
+                    <div class="ride-type" data-type="uberxl">
+
+                        <img src="https://cdn-icons-png.flaticon.com/512/3082/3082383.png" alt="UberXL" class="ride-icon">
+
+                        <span>UberXL</span>
+
+                        <span class="price">₹0</span>
+
+                    </div>
+
+                    <div class="ride-type" data-type="black">
+
+                        <img src="https://cdn-icons-png.flaticon.com/512/2550/2550223.png" alt="Black" class="ride-icon">
+
+                        <span>Black</span>
+
+                        <span class="price">₹0</span>
+
+                    </div>
+
+                </div>
+
+                <div id="fare-details">
+
+                    <p>Distance: <span id="distance">-- km</span></p>
+
+                    <p>Duration: <span id="duration">-- min</span></p>
+
+                    <p>Estimated Fare: <span id="fare-estimate">₹--</span></p>
+
+                </div>
+
+                <button id="book-btn" class="action-btn primary-btn" disabled>Request WoGo</button> <!-- Optional: Updated button text -->
+
+                <button id="schedule-btn" class="action-btn secondary-btn">Schedule for Later</button>
+
+            </aside>
+
+            <section class="map-container">
+
+                <div id="map"></div>
+
+            </section>
+
+        </main>
+
+
+
+        <div class="modal" id="booking-modal">
+
+            <div class="modal-content">
+
+                <h2>Ride Confirmed</h2>
+
+                <p id="modal-ride-type" class="modal-text"></p>
+
+                <p id="modal-route" class="modal-text"></p>
+
+                <p id="modal-eta" class="modal-text">ETA: -- min</p>
+
+                <div class="fare-breakdown">
+
+                    <p>Base Fare: <span id="modal-base-fare"></span></p>
+
+                    <p>Distance: <span id="modal-distance-charge"></span></p>
+
+                    <p>Surge: <span id="modal-surge"></span></p>
+
+                    <p>Promo Discount: <span id="modal-promo-discount">$0</span></p>
+
+                    <p class="total-fare">Total: <span id="modal-total"></span></p>
+
+                </div>
+
+                <p id="driver-status" class="modal-text">Finding driver...</p>
+
+                <div class="chat-box" id="chat-box" style="display: none;">
+
+                    <h3>Chat with Driver</h3>
+
+                    <div id="chat-messages"></div>
+
+                    <div class="chat-input-group">
+
+                        <input type="text" id="chat-input" placeholder="Message driver...">
+
+                        <button id="send-chat" class="action-btn">Send</button>
+
+                    </div>
+
+                </div>
+
+                <div class="payment-section">
+
+                    <h3>Payment</h3>
+
+                    <select id="payment-method" class="select-input">
+
+                        <option value="card">Visa **** 1234</option>
+
+                        <option value="cash">Cash</option>
+
+                        <option value="upi">UPI</option>
+
+                    </select>
+
+                    <button id="pay-now" class="action-btn primary-btn">Confirm Payment</button>
+
+                </div>
+
+                <div class="rating-section" style="display: none;">
+
+                    <h3>Rate Your Driver</h3>
+
+                    <div class="stars" id="rating-stars">
+
+                        <span data-value="1">★</span>
+
+                        <span data-value="2">★</span>
+
+                        <span data-value="3">★</span>
+
+                        <span data-value="4">★</span>
+
+                        <span data-value="5">★</span>
+
+                    </div>
+
+                    <button id="submit-rating" class="action-btn">Submit</button>
+
+                </div>
+
+                <div class="modal-buttons">
+
+                    <button id="cancel-btn" class="action-btn secondary-btn">Cancel Ride</button>
+
+                    <button id="close-modal" class="action-btn secondary-btn">Close</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="modal" id="profile-modal">
+
+            <div class="modal-content">
+
+                <h2>Your Account</h2>
+
+                <div class="profile-details">
+
+                    <div class="profile-pic">
+
+                        <img src="https://via.placeholder.com/80" alt="Profile" id="profile-pic">
+
+                        <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;"> <!-- Added file input -->
+
+                    </div>
+
+                    <div class="account-info">
+
+                        <p><strong>Name:</strong> <span id="profile-name" contenteditable="false"></span></p>
+
+                        <p><strong>Email:</strong> <span id="profile-email" contenteditable="false"></span></p>
+
+                        <p><strong>Phone:</strong> <span id="profile-phone" contenteditable="false"></span></p>
+
+                    </div>
+
+                </div>
+
+                <div class="stats">
+
+                    <p>Total Rides: <span id="total-rides">0</span></p>
+
+                    <p>Avg Rating: <span id="avg-rating">--</span></p>
+
+                </div>
+
+                <div class="promo-section">
+
+                    <input type="text" id="promo-code" placeholder="Enter Promo Code" class="input-field">
+
+                    <button id="apply-promo" class="action-btn">Apply</button>
+
+                </div>
+
+                <button id="edit-profile-btn" class="action-btn">Edit</button>
+
+                <button id="save-profile-btn" class="action-btn" style="display: none;">Save</button>
+
+                <button id="logout-btn" class="action-btn secondary-btn">Sign Out</button>
+
+                <div class="ride-history">
+
+                    <h3>Your Trips (<span id="history-count">0</span>)</h3>
+
+                    <ul id="ride-history-list"></ul>
+
+                    <p id="no-history" style="display: none;">No trips yet.</p>
+
+                </div>
+
+                <button id="close-profile" class="action-btn secondary-btn">Close</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="script.js"></script>
+
+</body>
+
+                  </html>
